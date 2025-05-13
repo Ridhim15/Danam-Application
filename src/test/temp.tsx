@@ -11,71 +11,28 @@ import {
 	Alert,
 } from "react-native"
 import { Session } from "@supabase/supabase-js"
-import { supabase } from "../initSupabase"
+import { supabase } from "@lib/supabase"
 import { SafeAreaView } from "react-native"
-import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { MainStackParamList } from "../types/navigation"
+import { router } from "expo-router"
+import { useLanguage } from "@context/LanguageContext"
 
-// User profile interface based on the actual database schema with nullable fields
 interface UserProfile {
-	id?: number
-	name?: string
-	email?: string
-	role?: string
-	auth_user_id: string
+	name: string
+	email: string
+	phone: string
+	address: string
+	blood_group: string
+	diseases: string[]
+	profile_image_url: string
+	age: number | null
+	role: string
 }
 
-// If there's a language context in your app, uncomment and import it
-// import { useLanguage } from "@context/LanguageContext"
-
-export default function ({ navigation }: NativeStackScreenProps<MainStackParamList, "MainTabs">) {
+const Profile = () => {
 	const [session, setSession] = useState<Session | null>(null)
 	const [profile, setProfile] = useState<UserProfile | null>(null)
 	const [loading, setLoading] = useState(true)
-	
-	// If there's no language context, provide a simple alternative
-	const [language, setLanguage] = useState("en")
-	// Simple translation function
-	const t = (key: string): string => {
-		const translations: {[key: string]: {[key: string]: string}} = {
-			en: {
-				myProfile: "My Profile",
-				logout: "Logout",
-				logoutConfirmation: "Are you sure you want to logout?",
-				cancel: "Cancel",
-				logoutError: "Error logging out",
-				error: "Error",
-				user: "User",
-				notProvided: "Not Provided",
-				age: "Age:",
-				notAdded: "N/A",
-				editProfile: "Edit Profile",
-				contactInformation: "Contact Information",
-				phone: "Phone",
-				address: "Address",
-			},
-			hi: {
-				myProfile: "मेरी प्रोफाइल",
-				logout: "लॉगआउट",
-				logoutConfirmation: "क्या आप लॉगआउट करना चाहते हैं?",
-				cancel: "रद्द करें",
-				logoutError: "लॉगआउट करने में त्रुटि",
-				error: "त्रुटि",
-				user: "उपयोगकर्ता",
-				notProvided: "प्रदान नहीं किया गया",
-				age: "उम्र:",
-				notAdded: "उपलब्ध नहीं",
-				
-				editProfile: "प्रोफाइल संपादित करें",
-				
-				
-				contactInformation: "संपर्क जानकारी",
-				phone: "फोन",
-				address: "पता",
-			}
-		}
-		return translations[language][key] || key
-	}
+	const { language, setLanguage, t } = useLanguage()
 
 	useEffect(() => {
 		fetchUserProfile()
@@ -83,34 +40,20 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 
 	const fetchUserProfile = async () => {
 		try {
-			// Get current session using Supabase v1 method
-			const currentSession = supabase.auth.session()
-			setSession(currentSession)
+			const {
+				data: { session },
+			} = await supabase.auth.getSession()
+			setSession(session)
 
-			if (currentSession?.user) {
-				// Query for user profile data
+			if (session?.user) {
 				const { data, error } = await supabase
-					.from("users")
+					.from("user_profiles")
 					.select("*")
-					.eq("auth_user_id", currentSession.user.id)
-					
-				if (error) {
-					console.error("Error fetching user profile:", error)
-				}
-				
-				// Check if we got any results back
-				if (data && data.length > 0) {
-					setProfile(data[0])
-				} else {
-					// Create a minimal profile with just the auth user ID and email
-					const minimalProfile: UserProfile = {
-						auth_user_id: currentSession.user.id,
-						email: currentSession.user.email,
-					}
-					setProfile(minimalProfile)
-					
-					console.log("No profile found for this user. Using minimal profile.")
-				}
+					.eq("user_id", session.user.id)
+					.single()
+
+				if (error) throw error
+				setProfile(data)
 			}
 		} catch (error) {
 			console.error("Error fetching profile:", error)
@@ -133,8 +76,7 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 							setLoading(true)
 							const { error } = await supabase.auth.signOut()
 							if (error) throw error
-							// Navigate as per your routing structure
-							navigation.navigate('Auth')
+							router.replace("/(auth)/login")
 						} catch (error) {
 							console.error("Error logging out:", error)
 							Alert.alert(t("error"), t("logoutError"))
@@ -196,7 +138,7 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 								source={
 									session?.user?.user_metadata?.picture
 										? { uri: session.user.user_metadata.picture }
-										: require("../../assets/images/profile_def_m.png")
+										: require("@assets/images/profile_def_m.png")
 								}
 								style={styles.profileImage}
 							/>
@@ -213,12 +155,13 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 									.replace(/^\w/, (c: string) => c.toUpperCase())}
 							</Text>
 							<View style={styles.quickInfoRow}>
-								{/* Since age isn't in our schema, we'll display a placeholder */}
 								<Text style={styles.userDetail}>
-									{t("age")} {t("notAdded")}
+									{t("age")} {profile?.age || t("notAdded")}
 								</Text>
-								{/* Since blood_group isn't in pour schema, we'll display a placeholder */}
-								
+								<Text style={styles.userDetail}>
+									{t("bloodGroup")}{" "}
+									<Text style={styles.highlightText}>{profile?.blood_group || t("notAdded")}</Text>
+								</Text>
 							</View>
 							<TouchableOpacity style={styles.editProfileButton}>
 								<Text style={styles.editProfileText}>{t("editProfile")}</Text>
@@ -227,18 +170,33 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 					</View>
 				</View>
 
-				{/* We'll keep these sections as placeholders since they're not in the schema */}
-				
+				<View style={[styles.infoCard, styles.medicalInfoCard]}>
+					<Text style={styles.sectionTitle}>{t("medicalInformation")}</Text>
+					<View style={styles.diseasesContainer}>
+						<Text style={styles.infoLabel}>{t("diseasesConditions")}</Text>
+						{profile?.diseases && profile.diseases.length > 0 ? (
+							<View style={styles.diseasesList}>
+								{profile.diseases.map((disease, index) => (
+									<View key={index} style={styles.diseaseItem}>
+										<Text style={styles.diseaseText}>{disease}</Text>
+									</View>
+								))}
+							</View>
+						) : (
+							<Text style={styles.noDataText}>{t("noMedicalConditions")}</Text>
+						)}
+					</View>
+				</View>
 
 				<View style={styles.infoCard}>
 					<Text style={styles.sectionTitle}>{t("contactInformation")}</Text>
 					<View style={styles.infoRow}>
 						<Text style={styles.infoLabel}>{t("phone")}</Text>
-						<Text style={styles.infoValue}>{t("notProvided")}</Text>
+						<Text style={styles.infoValue}>{profile?.phone || t("notProvided")}</Text>
 					</View>
 					<View style={styles.infoRow}>
 						<Text style={styles.infoLabel}>{t("address")}</Text>
-						<Text style={styles.infoValue}>{t("notProvided")}</Text>
+						<Text style={styles.infoValue}>{profile?.address || t("notProvided")}</Text>
 					</View>
 				</View>
 			</ScrollView>
@@ -451,3 +409,4 @@ const styles = StyleSheet.create({
 	},
 })
 
+export default Profile
