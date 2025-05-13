@@ -220,7 +220,10 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 								{/* Since blood_group isn't in pour schema, we'll display a placeholder */}
 								
 							</View>
-							<TouchableOpacity style={styles.editProfileButton}>
+							<TouchableOpacity 
+								style={styles.editProfileButton} 
+								onPress={() => navigation.navigate('ProfileDetails', { isEditMode: true })}
+							>
 								<Text style={styles.editProfileText}>{t("editProfile")}</Text>
 							</TouchableOpacity>
 						</View>

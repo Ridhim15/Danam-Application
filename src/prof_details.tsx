@@ -62,6 +62,7 @@ const ProfileDetailsScreen = () => {
 	const [selectedCountry, setSelectedCountry] = useState(countryCodes[0])
 	const [showCountryModal, setShowCountryModal] = useState(false)
 	const [countrySearch, setCountrySearch] = useState("")
+	const [isEditMode, setIsEditMode] = useState(false)
 
 	// Check if profile is complete
 	const isProfileComplete = (profile: UserProfileForm): boolean => {
@@ -84,6 +85,11 @@ const ProfileDetailsScreen = () => {
 					setLoading(false)
 					return
 				}
+
+				// Check if this form was opened from Edit Profile button
+				const params = navigation.getState().routes.find(r => r.name === 'ProfileDetails')?.params
+				const editMode = params && params.isEditMode
+				setIsEditMode(!!editMode)
 
 				// Simplify query to only include fields we know exist
 				const { data, error } = await supabase
@@ -109,8 +115,8 @@ const ProfileDetailsScreen = () => {
 					const complete = !!prefill.username.trim() && !!prefill.email.trim() && !!prefill.role.trim()
 					setProfileComplete(complete)
 					
-					// If profile is already complete, redirect to MainTabs with Home tab
-					if (complete) {
+					// If profile is already complete and we're not in edit mode, redirect to MainTabs with Home tab
+					if (complete && !editMode) {
 						setTimeout(() => {
 							navigation.navigate('MainTabs', { screen: 'Home' })
 						}, 1000)
@@ -191,7 +197,7 @@ const ProfileDetailsScreen = () => {
 		)
 	}
 
-	if (profileComplete) {
+	if (profileComplete && !isEditMode) {
 		return (
 			<View style={styles.loadingContainer}>
 				<Text style={styles.messageText}>Profile is already complete!</Text>
@@ -201,15 +207,21 @@ const ProfileDetailsScreen = () => {
 		)
 	}
 
+	const titleText = isEditMode ? "Edit Your Profile" : "Complete Your Profile"
+	const submitButtonText = isEditMode ? "Update Profile" : "Complete Profile"
+	const subtitleText = isEditMode 
+		? "You can edit your profile information below."
+		: "Please provide the missing information to complete your profile. This will help us provide you with a better experience."
+
 	return (
 		<KeyboardAvoidingView
 			style={{ flex: 1 }}
 			behavior={Platform.OS === "ios" ? "padding" : undefined}
 		>
 			<ScrollView contentContainerStyle={styles.container}>
-				<Text style={styles.title}>Complete Your Profile</Text>
+				<Text style={styles.title}>{titleText}</Text>
 				<Text style={styles.subtitle}>
-					Please provide the missing information to complete your profile. This will help us provide you with a better experience.
+					{subtitleText}
 				</Text>
 				
 				<View style={styles.inputGroup}>
@@ -220,13 +232,14 @@ const ProfileDetailsScreen = () => {
 						onChangeText={text => setForm(f => ({ ...f, username: text }))}
 						placeholder='Enter your name'
 						autoCapitalize='words'
+						editable={true} // Always allow name editing
 					/>
 				</View>
 
 				<View style={styles.inputGroup}>
 					<Text style={styles.label}>Email</Text>
 					<TextInput
-						style={styles.input}
+						style={[styles.input, !isEditMode && !!form.email ? styles.disabledInput : null]}
 						value={form.email}
 						onChangeText={text => setForm(f => ({ ...f, email: text }))}
 						placeholder='Enter your email'
@@ -234,6 +247,7 @@ const ProfileDetailsScreen = () => {
 						autoCapitalize='none'
 						autoCorrect={false}
 						maxLength={100}
+						editable={isEditMode || !form.email} // Only allow editing if in edit mode or email is empty
 					/>
 				</View>
 
@@ -244,13 +258,19 @@ const ProfileDetailsScreen = () => {
 							{roles.map(r => (
 								<TouchableOpacity
 									key={r}
-									style={[styles.roleButton, form.role === r && styles.roleButtonSelected]}
-									onPress={() => setForm(f => ({ ...f, role: r }))}
+									style={[
+										styles.roleButton, 
+										form.role === r && styles.roleButtonSelected,
+										!isEditMode && !!form.role && form.role !== r && styles.disabledButton
+									]}
+									onPress={() => isEditMode || !form.role ? setForm(f => ({ ...f, role: r })) : null}
+									disabled={!isEditMode && !!form.role && form.role !== r}
 								>
 									<Text
 										style={[
 											styles.roleButtonText,
 											form.role === r && styles.roleButtonTextSelected,
+											!isEditMode && !!form.role && form.role !== r && styles.disabledButtonText
 										]}
 									>
 										{r.charAt(0).toUpperCase() + r.slice(1)}
@@ -271,6 +291,7 @@ const ProfileDetailsScreen = () => {
 						multiline={true}
 						numberOfLines={2}
 						textAlignVertical="top"
+						editable={isEditMode || !form.address} // Only allow editing if in edit mode or address is empty
 					/>
 				</View>
 
@@ -279,32 +300,40 @@ const ProfileDetailsScreen = () => {
 					<View style={styles.phoneInputContainer}>
 						<TouchableOpacity
 							style={[styles.input, styles.countryCodeInput]}
-							onPress={() => setShowCountryModal(true)}
+							onPress={() => (isEditMode || !form.phone) && setShowCountryModal(true)}
+							disabled={!isEditMode && !!form.phone}
 						>
 							<Text>{selectedCountry.code}</Text>
 						</TouchableOpacity>
 						<TextInput
-							style={[styles.input, styles.phoneInput]}
+							style={[
+								styles.input, 
+								styles.phoneInput,
+								!isEditMode && !!form.phone ? styles.disabledInput : null
+							]}
 							value={
 								form.phone.startsWith(selectedCountry.code)
 									? form.phone.slice(selectedCountry.code.length)
 									: form.phone
 							}
 							onChangeText={text => {
-								const cleanText = text.replace(/[^0-9]/g, "").slice(0, 10)
-								setForm(prev => ({
-									...prev,
-									phone: selectedCountry.code + cleanText,
-								}))
+								if (isEditMode || !form.phone) {
+									const cleanText = text.replace(/[^0-9]/g, "").slice(0, 10)
+									setForm(prev => ({
+										...prev,
+										phone: selectedCountry.code + cleanText,
+									}))
+								}
 							}}
 							placeholder='Phone number'
 							keyboardType='phone-pad'
 							maxLength={10}
+							editable={isEditMode || !form.phone} // Only allow editing if in edit mode or phone is empty
 						/>
 					</View>
 				</View>
 				<TouchableOpacity style={styles.submitButton} onPress={handleSubmit} disabled={submitting}>
-					<Text style={styles.submitButtonText}>{submitting ? "Submitting..." : "Complete Profile"}</Text>
+					<Text style={styles.submitButtonText}>{submitting ? "Submitting..." : submitButtonText}</Text>
 				</TouchableOpacity>
 				<Modal
 					visible={showCountryModal}
@@ -485,6 +514,14 @@ const styles = StyleSheet.create({
 	},
 	disabledInputText: {
 		color: "#888",
+	},
+	disabledButton: {
+		backgroundColor: "#F5F5F5",
+		borderColor: "#E0E0E0",
+		opacity: 0.7,
+	},
+	disabledButtonText: {
+		color: "#BDBDBD",
 	},
 	userRole: {
 		fontSize: 14,
