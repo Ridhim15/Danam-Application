@@ -3,13 +3,14 @@ import React from "react"
 import { SafeAreaView } from "react-native"
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useNavigation } from '@react-navigation/native'
+import { Link, router } from "expo-router"
 
 const HomeScreen = () => {
 	const navigation = useNavigation();
 
 	const handleDonatePress = () => {
 		// Using the navigate method with the screen name directly
-		navigation.navigate('SchedulePickup');
+		navigation.navigate("SchedulePickup")
 	};
 
 	return (

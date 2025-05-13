@@ -77,7 +77,6 @@ export default function ({ navigation }: NativeStackScreenProps<AuthStackParamLi
 							placeholder='Enter your email'
 							value={email}
 							autoCapitalize='none'
-							autoCompleteType='on'
 							autoCorrect={false}
 							keyboardType='email-address'
 							onChangeText={text => setEmail(text)}
@@ -89,7 +88,6 @@ export default function ({ navigation }: NativeStackScreenProps<AuthStackParamLi
 							placeholder='Enter your password'
 							value={password}
 							autoCapitalize='none'
-							autoCompleteType='on'
 							autoCorrect={false}
 							secureTextEntry={true}
 							onChangeText={text => setPassword(text)}

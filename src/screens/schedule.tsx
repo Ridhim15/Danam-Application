@@ -87,8 +87,82 @@ const SchedulePickupScreen = () => {
         fetchDonorData();
     }, []);
     
-    const handleSchedulePickup = () => {
-        navigation.navigate('PickupScheduled');
+    const handleSchedulePickup = async () => {
+        try {
+            // Get current user session
+            const session = await supabase.auth.session();
+            
+            if (!session?.user) {
+                console.error("No user is logged in");
+                alert("Please log in to schedule a pickup");
+                return;
+            }
+            
+            // Make sure an NGO is selected
+            if (!selectedNgo) {
+                alert("Please select an NGO for your donation");
+                return;
+            }
+            
+            // Get the user's UUID from the database
+            const { data: userData, error: userError } = await supabase
+                .from("users")
+                .select("auth_user_id")
+                .eq("auth_user_id", session.user.id)
+                .single();
+                
+            if (userError || !userData) {
+                console.error("Error fetching user data:", userError);
+                alert("Could not verify your user account. Please try again.");
+                return;
+            }
+            
+            // Initialize donation data with default values
+            const donationData = {
+                meds: 0,
+                books: 0,
+                clothes: 0,
+                food: 0,
+                ngo: selectedNgo.name,
+                status: "pending", // Default status is pending
+                uid: session.user.id // Use the UUID directly from the session
+            };
+            
+            // Update quantities for each item type
+            donationItems.forEach(item => {
+                // Map the item types to database column names
+                const itemTypeMap = {
+                    "Medicine": "meds",
+                    "Books": "books",
+                    "Clothes": "clothes",
+                    "Food": "food"
+                };
+                
+                const dbField = itemTypeMap[item.type];
+                if (dbField) {
+                    donationData[dbField] += item.quantity;
+                }
+            });
+            
+            console.log("Attempting to insert donation:", donationData);
+            
+            // Insert donation data into the donation table
+            const { data, error } = await supabase
+                .from("donation")
+                .insert([donationData]);
+                
+            if (error) {
+                console.error("Error storing donation data:", error);
+                alert("There was an error scheduling your pickup. Please try again.");
+                return;
+            }
+            
+            console.log("Donation scheduled successfully:", data);
+            navigation.navigate('PickupScheduled');
+        } catch (err) {
+            console.error("Error in handleSchedulePickup:", err);
+            alert("An unexpected error occurred. Please try again.");
+        }
     };
 
     const handleNgoSelect = (ngo) => {

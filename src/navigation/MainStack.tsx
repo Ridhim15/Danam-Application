@@ -9,6 +9,9 @@ import MainTabs from "./MainTabs";
 import ProfileDetailsScreen from "../prof_details";
 import SchedulePickupScreen from "../screens/schedule";
 import PickupScheduledScreen from "../screens/pickupScheduled";
+import RoleScreen from "../screens/role";
+import WelcomeScreen from "../screens/WelcomeScreen";
+import VolunteerScreen from "../screens/Volunteer";
 
 // Key for storing profile completion status
 const PROFILE_COMPLETED_KEY = "profile_completed_status";
@@ -87,13 +90,16 @@ const Main = () => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName={profileComplete ? "MainTabs" : "ProfileDetails"}
+      initialRouteName={profileComplete ? "WelcomeBack" : "ProfileDetails"}
     >
+      <MainStack.Screen name="WelcomeBack" component={WelcomeScreen} />
+      <MainStack.Screen name="RoleSelect" component={RoleScreen} />
       <MainStack.Screen name="MainTabs" component={MainTabs} />
       <MainStack.Screen name="ProfileDetails" component={ProfileDetailsScreen} />
       <MainStack.Screen name="SecondScreen" component={SecondScreen} />
       <MainStack.Screen name="SchedulePickup" component={SchedulePickupScreen} />
       <MainStack.Screen name="PickupScheduled" component={PickupScheduledScreen} />
+      <MainStack.Screen name="Volunteer" component={VolunteerScreen} />
     </MainStack.Navigator>
   );
 };
