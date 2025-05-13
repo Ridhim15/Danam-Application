@@ -8,7 +8,7 @@ import TabBarText from "../components/utils/TabBarText"
 import Home from "../screens/Home"
 import About from "../screens/About"
 import Profile from "../screens/Profile"
-import UserProfileFormScreen from "../test/temp"
+import ProfileDetailsScreen from "../prof_details"
 
 const Tabs = createBottomTabNavigator()
 const MainTabs = () => {
@@ -48,14 +48,6 @@ const MainTabs = () => {
 				options={{
 					tabBarLabel: ({ focused }) => <TabBarText focused={focused} title='Profile' />,
 					tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} icon={"person-outline"} />,
-				}}
-			/>
-			<Tabs.Screen
-				name='EditProfile'
-				component={UserProfileFormScreen}
-				options={{
-					tabBarLabel: ({ focused }) => <TabBarText focused={focused} title='Edit Profile' />,
-					tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} icon={"create-outline"} />,
 				}}
 			/>
 		</Tabs.Navigator>

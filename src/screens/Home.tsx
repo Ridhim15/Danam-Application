@@ -11,7 +11,7 @@ const HomeScreen = () => {
 				{/* Header */}
 				<Text style={styles.header}>Danam</Text>
 				{/* Slideshow Image */}
-				<Image source={require("assets/images/nange.jpg")} style={styles.slideshowImage} />
+				<Image source={require("../../assets/images/nange.jpg")} style={styles.slideshowImage} />
 				{/* Subtitle */}
 				<Text style={styles.subtitle}>
 					Your Donations can change lives. Join us in our mission to help those in need
@@ -19,10 +19,10 @@ const HomeScreen = () => {
 				{/* Donation Categories */}
 				<View style={styles.gridContainer}>
 					{[
-						{ name: "Packaged Food", img: require("assets/images/paper-bag.png") },
-						{ name: "Books", img: require("assets/images/book.png") },
-						{ name: "Clothes", img: require("assets/images/brand.png") },
-						{ name: "E-Waste", img: require("assets/images/ewaste.png") },
+						{ name: "Packaged Food", img: require("../../assets/images/paper-bag.png") },
+						{ name: "Books", img: require("../../assets/images/book.png") },
+						{ name: "Clothes", img: require("../../assets/images/brand.png") },
+						{ name: "E-Waste", img: require("../../assets/images/ewaste.png") },
 					].map((item, index) => (
 						<View key={index} style={styles.gridItem}>
 							<Image source={item.img} style={styles.gridImage} />
@@ -35,11 +35,11 @@ const HomeScreen = () => {
 				</Link>
 				{/* Nearest NGOs */}
 				<View style={styles.ngoContainer}>
-					<Text style={styles.ngoTitle}>Nearest NGO’s</Text>
+					<Text style={styles.ngoTitle}>Nearest NGO's</Text>
 					{[
-						{ name: "NGO1", email: "NGO1.COM", img: require("assets/images/dalla.png") },
-						{ name: "NGO2", email: "NGO2.COM", img: require("assets/images/dalla.png") },
-						{ name: "NGO3", email: "NGO3.COM", img: require("assets/images/dalla.png") },
+						{ name: "NGO1", email: "NGO1.COM", img: require("../../assets/images/dalla.png") },
+						{ name: "NGO2", email: "NGO2.COM", img: require("../../assets/images/dalla.png") },
+						{ name: "NGO3", email: "NGO3.COM", img: require("../../assets/images/dalla.png") },
 					].map((ngo, index) => (
 						<View key={index} style={styles.ngoItem}>
 							<Image source={ngo.img} style={styles.ngoImage} />

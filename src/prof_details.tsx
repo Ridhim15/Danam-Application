@@ -12,10 +12,14 @@ import {
 	Platform,
 	Modal,
 } from "react-native"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import { supabase } from "./initSupabase"
 import { useNavigation } from "@react-navigation/native"
 import { MainTabsParamList } from "./types/navigation"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+
+// Key for storing profile completion status - must match MainStack.tsx
+const PROFILE_COMPLETED_KEY = "profile_completed_status"
 
 interface UserProfileForm {
 	username: string
@@ -176,6 +180,14 @@ const ProfileDetailsScreen = () => {
 			const { error } = await supabase.from("users").upsert(userData)
 			if (error) throw error
 			
+			// Mark the profile as completed in AsyncStorage
+			try {
+				await AsyncStorage.setItem(PROFILE_COMPLETED_KEY, "true")
+				console.log("Profile marked as completed in AsyncStorage")
+			} catch (storageError) {
+				console.error("Error saving to AsyncStorage:", storageError)
+			}
+			
 			Alert.alert("Success", "Profile updated successfully!", [
 				{
 					text: "Continue",
@@ -317,18 +329,17 @@ const ProfileDetailsScreen = () => {
 									: form.phone
 							}
 							onChangeText={text => {
-								if (isEditMode || !form.phone) {
-									const cleanText = text.replace(/[^0-9]/g, "").slice(0, 10)
-									setForm(prev => ({
-										...prev,
-										phone: selectedCountry.code + cleanText,
-									}))
-								}
+								// Simplified phone input handler
+								const cleanText = text.replace(/[^0-9]/g, "")
+								setForm(prev => ({
+									...prev,
+									phone: selectedCountry.code + cleanText,
+								}))
 							}}
 							placeholder='Phone number'
 							keyboardType='phone-pad'
 							maxLength={10}
-							editable={isEditMode || !form.phone} // Only allow editing if in edit mode or phone is empty
+							editable={true} // Always allow editing
 						/>
 					</View>
 				</View>
