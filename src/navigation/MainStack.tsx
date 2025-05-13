@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { supabase } from "../initSupabase";
-import { ActivityIndicator, View, Text } from "react-native";
+import { ActivityIndicator, View, Text, ScrollView, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import SecondScreen from "../screens/SecondScreen";
 import MainTabs from "./MainTabs";
 import ProfileDetailsScreen from "../prof_details";
+import SchedulePickupScreen from "../screens/schedule";
 
 // Key for storing profile completion status
 const PROFILE_COMPLETED_KEY = "profile_completed_status";
@@ -90,6 +91,7 @@ const Main = () => {
       <MainStack.Screen name="MainTabs" component={MainTabs} />
       <MainStack.Screen name="ProfileDetails" component={ProfileDetailsScreen} />
       <MainStack.Screen name="SecondScreen" component={SecondScreen} />
+      <MainStack.Screen name="SchedulePickup" component={SchedulePickupScreen} />
     </MainStack.Navigator>
   );
 };

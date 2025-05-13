@@ -1,9 +1,17 @@
-import { Link } from "expo-router"
 import { StatusBar } from "expo-status-bar"
 import React from "react"
 import { SafeAreaView } from "react-native"
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native"
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { useNavigation } from '@react-navigation/native'
+
 const HomeScreen = () => {
+	const navigation = useNavigation();
+
+	const handleDonatePress = () => {
+		// Using the navigate method with the screen name directly
+		navigation.navigate('SchedulePickup');
+	};
+
 	return (
 		<SafeAreaView>
 			<ScrollView contentContainerStyle={styles.container}>
@@ -30,9 +38,9 @@ const HomeScreen = () => {
 						</View>
 					))}
 				</View>
-				<Link href='/Home/SchedulePickupScreen' style={styles.donateButton}>
+				<TouchableOpacity style={styles.donateButton} onPress={handleDonatePress}>
 					<Text style={styles.donateButtonText}>Donate Now</Text>
-				</Link>
+				</TouchableOpacity>
 				{/* Nearest NGOs */}
 				<View style={styles.ngoContainer}>
 					<Text style={styles.ngoTitle}>Nearest NGO's</Text>
