@@ -12,7 +12,10 @@ import {
 	Platform,
 	Modal,
 } from "react-native"
-import { supabase } from "../initSupabase"
+import { supabase } from "./initSupabase"
+import { useNavigation } from "@react-navigation/native"
+import { MainTabsParamList } from "./types/navigation"
+import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 
 interface UserProfileForm {
 	username: string
@@ -42,7 +45,10 @@ const countryCodes = [
 	{ name: "South Korea", code: "+82" },
 ]
 
-const UserProfileFormScreen = () => {
+type ProfileNavigationProp = NativeStackNavigationProp<MainTabsParamList, 'Home'>
+
+const ProfileDetailsScreen = () => {
+	const navigation = useNavigation<ProfileNavigationProp>()
 	const [form, setForm] = useState<UserProfileForm>({
 		username: "",
 		email: "",
@@ -52,43 +58,67 @@ const UserProfileFormScreen = () => {
 	})
 	const [loading, setLoading] = useState(true)
 	const [submitting, setSubmitting] = useState(false)
-	const [isPrefilled, setIsPrefilled] = useState(false)
-	const [isEmailPrefilled, setIsEmailPrefilled] = useState(false)
+	const [profileComplete, setProfileComplete] = useState(false)
 	const [selectedCountry, setSelectedCountry] = useState(countryCodes[0])
 	const [showCountryModal, setShowCountryModal] = useState(false)
 	const [countrySearch, setCountrySearch] = useState("")
 
+	// Check if profile is complete
+	const isProfileComplete = (profile: UserProfileForm): boolean => {
+		return (
+			!!profile.username.trim() &&
+			!!profile.email.trim() &&
+			!!profile.role.trim() &&
+			!!profile.phone.trim() &&
+			!!profile.address.trim()
+		)
+	}
+
 	useEffect(() => {
 		const fetchProfile = async () => {
 			try {
-				const {
-					data: { session },
-				} = await supabase.auth.getSession()
-				if (!session?.user) throw new Error("Not logged in")
+				const session = supabase.auth.session()
+				if (!session?.user) {
+					// Not logged in, navigate away
+					Alert.alert("Error", "You must be logged in to access this page")
+					setLoading(false)
+					return
+				}
+
+				// Simplify query to only include fields we know exist
 				const { data, error } = await supabase
-					.from("user_profiles")
-					.select("*")
-					.eq("user_id", session.user.id)
+					.from("users")
+					.select("name, email, role, address, updated_at")
+					.eq("auth_user_id", session.user.id)
 					.single()
+				
 				if (error && error.code !== "PGRST116") throw error
+				
 				if (data) {
 					const prefill = {
-						username: data.user_name || data.name || "",
-						email: data.email || session.user.email || "",
-						role: data.role || "",
-						phone: data.phone_no || data.phone || "",
-						address: data.address || "",
+						username: data.name ?? "",
+						email: data.email ?? session.user.email ?? "",
+						role: data.role ?? "",
+						phone: "", // Default to empty string as phone_no doesn't exist
+						address: data.address ?? "",
 					}
+					console.log("Prefilled data:", prefill)
 					setForm(prefill)
-					if (data.user_name || data.name || data.role || data.phone_no || data.phone || data.address) {
-						setIsPrefilled(true)
-					}
-					if (data.email && data.email.trim() !== "") {
-						setIsEmailPrefilled(true)
+					
+					// Consider profile complete if name and email are present
+					const complete = !!prefill.username.trim() && !!prefill.email.trim() && !!prefill.role.trim()
+					setProfileComplete(complete)
+					
+					// If profile is already complete, redirect to MainTabs with Home tab
+					if (complete) {
+						setTimeout(() => {
+							navigation.navigate('MainTabs', { screen: 'Home' })
+						}, 1000)
 					}
 				} else {
-					setForm(prev => ({
-						...prev,
+					// New user, prefill email
+					setForm(f => ({
+						...f,
 						email: session.user.email || "",
 					}))
 				}
@@ -99,7 +129,7 @@ const UserProfileFormScreen = () => {
 			}
 		}
 		fetchProfile()
-	}, [])
+	}, [navigation])
 
 	const validate = () => {
 		if (!form.username.trim()) return "Username is required"
@@ -120,21 +150,32 @@ const UserProfileFormScreen = () => {
 		}
 		setSubmitting(true)
 		try {
-			const {
-				data: { session },
-			} = await supabase.auth.getSession()
+			const session = supabase.auth.session()
 			if (!session?.user) throw new Error("Not logged in")
-			const { error } = await supabase.from("user_profiles").upsert({
-				user_id: session.user.id,
-				user_name: form.username,
+			
+			// Build an object with only the fields we need to update
+			const userData: any = {
+				auth_user_id: session.user.id,
+				name: form.username,
 				email: form.email,
 				role: form.role,
-				phone_no: form.phone,
-				address: form.address,
 				updated_at: new Date().toISOString(),
-			})
+			}
+			
+			// Add additional properties only if your database has these columns
+			if (form.address) {
+				userData.address = form.address
+			}
+			
+			const { error } = await supabase.from("users").upsert(userData)
 			if (error) throw error
-			Alert.alert("Success", "Profile updated successfully!")
+			
+			Alert.alert("Success", "Profile updated successfully!", [
+				{
+					text: "Continue",
+					onPress: () => navigation.navigate('MainTabs', { screen: 'Home' })
+				}
+			])
 		} catch (e: any) {
 			Alert.alert("Error", e.message || "Could not update profile.")
 		} finally {
@@ -150,13 +191,27 @@ const UserProfileFormScreen = () => {
 		)
 	}
 
+	if (profileComplete) {
+		return (
+			<View style={styles.loadingContainer}>
+				<Text style={styles.messageText}>Profile is already complete!</Text>
+				<Text style={styles.submessageText}>Redirecting to Home...</Text>
+				<ActivityIndicator size='large' color='#2196F3' style={{ marginTop: 20 }} />
+			</View>
+		)
+	}
+
 	return (
 		<KeyboardAvoidingView
 			style={{ flex: 1 }}
 			behavior={Platform.OS === "ios" ? "padding" : undefined}
 		>
 			<ScrollView contentContainerStyle={styles.container}>
-				<Text style={styles.title}>User Profile Form</Text>
+				<Text style={styles.title}>Complete Your Profile</Text>
+				<Text style={styles.subtitle}>
+					Please provide the missing information to complete your profile. This will help us provide you with a better experience.
+				</Text>
+				
 				<View style={styles.inputGroup}>
 					<Text style={styles.label}>Username</Text>
 					<TextInput
@@ -165,60 +220,45 @@ const UserProfileFormScreen = () => {
 						onChangeText={text => setForm(f => ({ ...f, username: text }))}
 						placeholder='Enter your name'
 						autoCapitalize='words'
-						editable={true}
 					/>
 				</View>
+
 				<View style={styles.inputGroup}>
-					{isPrefilled && form.role ? (
-						<Text style={[styles.userRole, styles.highlightText]}>
-							<Text style={styles.label}>Role: </Text>
-							{form.role.toLowerCase().replace(/^\w/, c => c.toUpperCase())}
-						</Text>
-					) : (
-						<View style={styles.roleRow}>
-							<Text style={styles.label}>Role</Text>
-							<View style={styles.roleButtonsContainer}>
-								{roles.map(r => (
-									<TouchableOpacity
-										key={r}
-										style={[styles.roleButton, form.role === r && styles.roleButtonSelected]}
-										onPress={() => setForm(f => ({ ...f, role: r }))}
-									>
-										<Text
-											style={[
-												styles.roleButtonText,
-												form.role === r && styles.roleButtonTextSelected,
-											]}
-										>
-											{r.charAt(0).toUpperCase() + r.slice(1)}
-										</Text>
-									</TouchableOpacity>
-								))}
-							</View>
-						</View>
-					)}
-				</View>
-				
-				{/* Completely rebuilt email input field */}
-				<View style={styles.inputGroup}>
-					<Text style={styles.label}>Email Address</Text>
+					<Text style={styles.label}>Email</Text>
 					<TextInput
 						style={styles.input}
-						placeholder="Enter your email address"
-						autoCapitalize="none"
-						keyboardType="email-address"
-						autoCorrect={false}
-						spellCheck={false}
-						maxLength={50}
 						value={form.email}
-						onChangeText={(text) => {
-							// Simple direct update of form state
-							setForm({
-								...form,
-								email: text
-							});
-						}}
+						onChangeText={text => setForm(f => ({ ...f, email: text }))}
+						placeholder='Enter your email'
+						keyboardType='email-address'
+						autoCapitalize='none'
+						autoCorrect={false}
+						maxLength={100}
 					/>
+				</View>
+
+				<View style={styles.inputGroup}>
+					<View style={styles.roleRow}>
+						<Text style={styles.label}>Role</Text>
+						<View style={styles.roleButtonsContainer}>
+							{roles.map(r => (
+								<TouchableOpacity
+									key={r}
+									style={[styles.roleButton, form.role === r && styles.roleButtonSelected]}
+									onPress={() => setForm(f => ({ ...f, role: r }))}
+								>
+									<Text
+										style={[
+											styles.roleButtonText,
+											form.role === r && styles.roleButtonTextSelected,
+										]}
+									>
+										{r.charAt(0).toUpperCase() + r.slice(1)}
+									</Text>
+								</TouchableOpacity>
+							))}
+						</View>
+					</View>
 				</View>
 
 				<View style={styles.inputGroup}>
@@ -244,34 +284,27 @@ const UserProfileFormScreen = () => {
 							<Text>{selectedCountry.code}</Text>
 						</TouchableOpacity>
 						<TextInput
-							style={[
-								styles.input,
-								styles.phoneInput,
-								isPrefilled && form.phone ? styles.disabledInput : null,
-							]}
+							style={[styles.input, styles.phoneInput]}
 							value={
 								form.phone.startsWith(selectedCountry.code)
 									? form.phone.slice(selectedCountry.code.length)
 									: form.phone
 							}
 							onChangeText={text => {
-								if (!(isPrefilled && form.phone)) {
-									const cleanText = text.replace(/[^0-9]/g, "").slice(0, 10)
-									setForm(prev => ({
-										...prev,
-										phone: selectedCountry.code + cleanText,
-									}))
-								}
+								const cleanText = text.replace(/[^0-9]/g, "").slice(0, 10)
+								setForm(prev => ({
+									...prev,
+									phone: selectedCountry.code + cleanText,
+								}))
 							}}
 							placeholder='Phone number'
 							keyboardType='phone-pad'
-							editable={!(isPrefilled && form.phone)}
 							maxLength={10}
 						/>
 					</View>
 				</View>
 				<TouchableOpacity style={styles.submitButton} onPress={handleSubmit} disabled={submitting}>
-					<Text style={styles.submitButtonText}>{submitting ? "Submitting..." : "Submit"}</Text>
+					<Text style={styles.submitButtonText}>{submitting ? "Submitting..." : "Complete Profile"}</Text>
 				</TouchableOpacity>
 				<Modal
 					visible={showCountryModal}
@@ -358,8 +391,25 @@ const styles = StyleSheet.create({
 		fontSize: 24,
 		fontWeight: "bold",
 		color: "#2196F3",
+		marginBottom: 10,
+		textAlign: "center",
+	},
+	subtitle: {
+		fontSize: 16,
+		color: "#666",
 		marginBottom: 24,
 		textAlign: "center",
+		lineHeight: 22,
+	},
+	messageText: {
+		fontSize: 18,
+		fontWeight: "bold",
+		color: "#2196F3",
+		marginBottom: 8,
+	},
+	submessageText: {
+		fontSize: 16,
+		color: "#666",
 	},
 	inputGroup: {
 		marginBottom: 18,
@@ -513,4 +563,4 @@ const styles = StyleSheet.create({
 	},
 })
 
-export default UserProfileFormScreen
+export default ProfileDetailsScreen
