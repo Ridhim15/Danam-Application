@@ -9,6 +9,7 @@ import Home from "../screens/Home"
 import About from "../screens/About"
 import Profile from "../screens/Profile"
 import ProfileDetailsScreen from "../prof_details"
+import CommunityScreen from "../screens/Community" // Import from screens directory
 
 const Tabs = createBottomTabNavigator()
 const MainTabs = () => {
@@ -28,7 +29,7 @@ const MainTabs = () => {
 			{/* these icons using Ionicons */}
 			<Tabs.Screen
 				name='Community'
-				component={About} // Replace with your Community screen if available
+				component={CommunityScreen} // Using the CommunityScreen from screens directory
 				options={{
 					tabBarLabel: ({ focused }) => <TabBarText focused={focused} title='Community' />,
 					tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} icon={"people-outline"} />,

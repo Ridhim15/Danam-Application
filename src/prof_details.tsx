@@ -98,7 +98,7 @@ const ProfileDetailsScreen = () => {
 				// Simplify query to only include fields we know exist
 				const { data, error } = await supabase
 					.from("users")
-					.select("name, email, role, address, updated_at")
+					.select("name, email, role, address, phone, updated_at")
 					.eq("auth_user_id", session.user.id)
 					.single()
 				
@@ -109,7 +109,7 @@ const ProfileDetailsScreen = () => {
 						username: data.name ?? "",
 						email: data.email ?? session.user.email ?? "",
 						role: data.role ?? "",
-						phone: "", // Default to empty string as phone_no doesn't exist
+						phone: data.phone ?? "", // Use phone from database
 						address: data.address ?? "",
 					}
 					console.log("Prefilled data:", prefill)
@@ -180,6 +180,7 @@ const ProfileDetailsScreen = () => {
 				name: form.username,
 				email: form.email,
 				role: form.role,
+				phone: form.phone, // Add phone to save to the database
 				updated_at: new Date().toISOString(),
 			}
 			
@@ -234,7 +235,7 @@ const ProfileDetailsScreen = () => {
 	if (loading) {
 		return (
 			<View style={styles.loadingContainer}>
-				<ActivityIndicator size='large' color='#2196F3' />
+				<ActivityIndicator size='large' color='#6A1B9A' />
 			</View>
 		)
 	}
@@ -244,7 +245,7 @@ const ProfileDetailsScreen = () => {
 			<View style={styles.loadingContainer}>
 				<Text style={styles.messageText}>Profile is already complete!</Text>
 				<Text style={styles.submessageText}>Redirecting to Home...</Text>
-				<ActivityIndicator size='large' color='#2196F3' style={{ marginTop: 20 }} />
+				<ActivityIndicator size='large' color='#6A1B9A' style={{ marginTop: 20 }} />
 			</View>
 		)
 	}
@@ -447,7 +448,7 @@ const ProfileDetailsScreen = () => {
 const styles = StyleSheet.create({
 	container: {
 		flexGrow: 1,
-		backgroundColor: "#F5F5F5",
+		backgroundColor: "#F4ECFF", // Updated to Light Purple
 		padding: 24,
 		justifyContent: "center",
 	},
@@ -455,12 +456,12 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		backgroundColor: "#F5F5F5",
+		backgroundColor: "#F4ECFF", // Updated to Light Purple
 	},
 	title: {
 		fontSize: 24,
 		fontWeight: "bold",
-		color: "#2196F3",
+		color: "#4A148C", // Updated to Deep Purple
 		marginBottom: 10,
 		textAlign: "center",
 	},
@@ -474,7 +475,7 @@ const styles = StyleSheet.create({
 	messageText: {
 		fontSize: 18,
 		fontWeight: "bold",
-		color: "#2196F3",
+		color: "#4A148C", // Updated to Deep Purple
 		marginBottom: 8,
 	},
 	submessageText: {
@@ -510,23 +511,23 @@ const styles = StyleSheet.create({
 		marginTop: 6,
 	},
 	roleButton: {
-		backgroundColor: "#E3F2FD",
+		backgroundColor: "#EDE7F6", // Updated to Soft Purple
 		paddingVertical: 10,
 		paddingHorizontal: 14,
 		borderRadius: 20,
 		borderWidth: 1,
-		borderColor: "#BBDEFB",
+		borderColor: "#D1C4E9", // Updated to Light Purple
 		flex: 1,
 		marginHorizontal: 5,
 		alignItems: "center",
 		maxWidth: "30%",
 	},
 	roleButtonSelected: {
-		backgroundColor: "#1976D2",
-		borderColor: "#1976D2",
+		backgroundColor: "#4A148C", // Updated to Deep Purple
+		borderColor: "#4A148C", // Updated to Deep Purple
 	},
 	roleButtonText: {
-		color: "#2196F3",
+		color: "#6A1B9A", // Updated to Medium Purple
 		fontWeight: "600",
 		fontSize: 13,
 		letterSpacing: 0.4,
@@ -536,7 +537,7 @@ const styles = StyleSheet.create({
 		fontWeight: "700",
 	},
 	submitButton: {
-		backgroundColor: "#1976D2",
+		backgroundColor: "#4A148C", // Updated to Deep Purple
 		paddingVertical: 14,
 		borderRadius: 24,
 		alignItems: "center",
@@ -570,7 +571,7 @@ const styles = StyleSheet.create({
 		marginBottom: 8,
 	},
 	highlightText: {
-		color: "#2196F3",
+		color: "#6A1B9A", // Updated to Medium Purple
 		fontWeight: "700",
 	},
 	phoneInputContainer: {
@@ -618,18 +619,18 @@ const styles = StyleSheet.create({
 		borderBottomColor: "#EEE",
 	},
 	selectedOption: {
-		backgroundColor: "#E3F2FD",
+		backgroundColor: "#EDE7F6", // Updated to Soft Purple
 	},
 	modalOptionText: {
 		fontSize: 16,
 	},
 	selectedOptionText: {
-		color: "#1976D2",
+		color: "#4A148C", // Updated to Deep Purple
 		fontWeight: "bold",
 	},
 	modalDoneButton: {
 		marginTop: 10,
-		backgroundColor: "#1976D2",
+		backgroundColor: "#4A148C", // Updated to Deep Purple
 		paddingVertical: 10,
 		borderRadius: 8,
 		alignItems: "center",

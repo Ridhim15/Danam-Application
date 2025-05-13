@@ -23,6 +23,8 @@ interface UserProfile {
 	email?: string
 	role?: string
 	auth_user_id: string
+	address?: string
+	phone?: string
 }
 
 // If there's a language context in your app, uncomment and import it
@@ -91,7 +93,7 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 				// Query for user profile data
 				const { data, error } = await supabase
 					.from("users")
-					.select("*")
+					.select("*") // Make sure we're getting all fields including phone
 					.eq("auth_user_id", currentSession.user.id)
 					
 				if (error) {
@@ -100,6 +102,7 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 				
 				// Check if we got any results back
 				if (data && data.length > 0) {
+					console.log("User profile data fetched:", data[0]) // Log the retrieved profile data
 					setProfile(data[0])
 				} else {
 					// Create a minimal profile with just the auth user ID and email
@@ -155,7 +158,7 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 	if (loading) {
 		return (
 			<View style={styles.loadingContainer}>
-				<ActivityIndicator size='large' color='#2196F3' />
+				<ActivityIndicator size='large' color='#6A1B9A' />
 			</View>
 		)
 	}
@@ -237,11 +240,15 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 					<Text style={styles.sectionTitle}>{t("contactInformation")}</Text>
 					<View style={styles.infoRow}>
 						<Text style={styles.infoLabel}>{t("phone")}</Text>
-						<Text style={styles.infoValue}>{t("notProvided")}</Text>
+						<Text style={styles.infoValue}>
+							{profile?.phone || t("notProvided")}
+						</Text>
 					</View>
 					<View style={styles.infoRow}>
 						<Text style={styles.infoLabel}>{t("address")}</Text>
-						<Text style={styles.infoValue}>{t("notProvided")}</Text>
+						<Text style={styles.infoValue}>
+							{profile?.address || t("notProvided")}
+						</Text>
 					</View>
 				</View>
 			</ScrollView>
@@ -252,16 +259,16 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: "#F5F5F5",
+		backgroundColor: "#F4ECFF", // Updated to match Home.tsx theme
 	},
 	loadingContainer: {
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		backgroundColor: "#F5F5F5",
+		backgroundColor: "#F4ECFF", // Updated to match Home.tsx theme
 	},
 	headerBackground: {
-		backgroundColor: "#2196F3",
+		backgroundColor: "#4A148C", // Updated from blue to Deep Purple
 		height: 170,
 		borderBottomLeftRadius: 0,
 		borderBottomRightRadius: 0,
@@ -340,7 +347,7 @@ const styles = StyleSheet.create({
 		height: 100,
 		borderRadius: 50,
 		borderWidth: 3,
-		borderColor: "#2196F3",
+		borderColor: "#6A1B9A", // Updated from blue to Medium Purple
 	},
 	profileDetails: {
 		flex: 1,
@@ -368,11 +375,11 @@ const styles = StyleSheet.create({
 		marginBottom: 4,
 	},
 	highlightText: {
-		color: "#2196F3",
+		color: "#6A1B9A", // Updated from blue to Medium Purple
 		fontWeight: "bold",
 	},
 	editProfileButton: {
-		backgroundColor: "#1976D2",
+		backgroundColor: "#4A148C", // Updated from blue to Deep Purple
 		paddingVertical: 8,
 		paddingHorizontal: 16,
 		borderRadius: 20,
@@ -433,17 +440,17 @@ const styles = StyleSheet.create({
 		marginTop: 8,
 	},
 	diseaseItem: {
-		backgroundColor: "#E3F2FD",
+		backgroundColor: "#EDE7F6", // Updated to Soft Purple
 		borderRadius: 20,
 		paddingVertical: 8,
 		paddingHorizontal: 16,
 		marginRight: 8,
 		marginBottom: 8,
 		borderWidth: 1,
-		borderColor: "#BBDEFB",
+		borderColor: "#D1C4E9", // Updated to Light Purple
 	},
 	diseaseText: {
-		color: "#2196F3",
+		color: "#6A1B9A", // Updated from blue to Medium Purple
 		fontWeight: "500",
 	},
 	noDataText: {
