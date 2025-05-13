@@ -163,9 +163,20 @@ const ProfileDetailsScreen = () => {
 			const session = supabase.auth.session()
 			if (!session?.user) throw new Error("Not logged in")
 			
-			// Build an object with only the fields we need to update
+			// First check if a user record already exists
+			const { data: existingUser, error: fetchError } = await supabase
+				.from("users")
+				.select("id")
+				.eq("auth_user_id", session.user.id)
+				.single()
+				
+			if (fetchError && fetchError.code !== "PGRST116") {
+				// Error other than "not found"
+				throw fetchError
+			}
+			
+			// Build an object with the user data to update
 			const userData: any = {
-				auth_user_id: session.user.id,
 				name: form.username,
 				email: form.email,
 				role: form.role,
@@ -177,7 +188,26 @@ const ProfileDetailsScreen = () => {
 				userData.address = form.address
 			}
 			
-			const { error } = await supabase.from("users").upsert(userData)
+			let error = null
+			
+			if (existingUser) {
+				// Update existing record
+				console.log("Updating existing user record with ID:", existingUser.id)
+				const { error: updateError } = await supabase
+					.from("users")
+					.update(userData)
+					.eq("id", existingUser.id)
+				error = updateError
+			} else {
+				// Create new record only if one doesn't exist
+				console.log("Creating new user record")
+				userData.auth_user_id = session.user.id // Add auth_user_id only for new records
+				const { error: insertError } = await supabase
+					.from("users")
+					.insert(userData)
+				error = insertError
+			}
+			
 			if (error) throw error
 			
 			// Mark the profile as completed in AsyncStorage
