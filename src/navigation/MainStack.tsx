@@ -8,6 +8,7 @@ import SecondScreen from "../screens/SecondScreen";
 import MainTabs from "./MainTabs";
 import ProfileDetailsScreen from "../prof_details";
 import SchedulePickupScreen from "../screens/schedule";
+import PickupScheduledScreen from "../screens/pickupScheduled";
 
 // Key for storing profile completion status
 const PROFILE_COMPLETED_KEY = "profile_completed_status";
@@ -92,6 +93,7 @@ const Main = () => {
       <MainStack.Screen name="ProfileDetails" component={ProfileDetailsScreen} />
       <MainStack.Screen name="SecondScreen" component={SecondScreen} />
       <MainStack.Screen name="SchedulePickup" component={SchedulePickupScreen} />
+      <MainStack.Screen name="PickupScheduled" component={PickupScheduledScreen} />
     </MainStack.Navigator>
   );
 };

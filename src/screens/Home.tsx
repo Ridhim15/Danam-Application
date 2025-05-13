@@ -45,9 +45,11 @@ const HomeScreen = () => {
 				<View style={styles.ngoContainer}>
 					<Text style={styles.ngoTitle}>Nearest NGO's</Text>
 					{[
-						{ name: "NGO1", email: "NGO1.COM", img: require("../../assets/images/dalla.png") },
-						{ name: "NGO2", email: "NGO2.COM", img: require("../../assets/images/dalla.png") },
-						{ name: "NGO3", email: "NGO3.COM", img: require("../../assets/images/dalla.png") },
+						{ name: "Kalpvriksh - Ek Chota Prayas NGO", email: "kalpvriksh@ngo.org", img: require("../../assets/images/dalla.png") },
+						{ name: "GARV - a genius and real voice NGO", email: "garv@ngo.org", img: require("../../assets/images/dalla.png") },
+						{ name: "Self Awakening Mission NGO", email: "selfawakening@ngo.org", img: require("../../assets/images/dalla.png") },
+						{ name: "Scope for Change", email: "scopeforchange@ngo.org", img: require("../../assets/images/dalla.png") },
+						{ name: "Guru daani foundation", email: "gurudaani@foundation.org", img: require("../../assets/images/dalla.png") },
 					].map((ngo, index) => (
 						<View key={index} style={styles.ngoItem}>
 							<Image source={ngo.img} style={styles.ngoImage} />
@@ -121,7 +123,7 @@ const styles = StyleSheet.create({
 		marginTop: 20,
 	},
 	ngoTitle: {
-		fontSize: 18,
+		fontSize: 17, // Reduced from 18
 		fontWeight: "bold",
 		color: "#4A148C", // Deep Purple
 		marginBottom: 10,
@@ -138,7 +140,7 @@ const styles = StyleSheet.create({
 		marginRight: 10,
 	},
 	ngoName: {
-		fontSize: 16,
+		fontSize: 15, // Reduced from 16
 		fontWeight: "bold",
 		color: "#6A1B9A", // Medium Purple
 	},
@@ -160,7 +162,7 @@ const styles = StyleSheet.create({
 		color: "#333", // Dark text
 	},
 	ngoEmail: {
-		fontSize: 14,
+		fontSize: 13, // Reduced from 14
 		color: "#757575", // Grey
 	},
 })

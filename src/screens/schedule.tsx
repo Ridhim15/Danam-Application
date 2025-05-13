@@ -88,7 +88,7 @@ const SchedulePickupScreen = () => {
     }, []);
     
     const handleSchedulePickup = () => {
-        navigation.navigate('MainTabs');
+        navigation.navigate('PickupScheduled');
     };
 
     const handleNgoSelect = (ngo) => {

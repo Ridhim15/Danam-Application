@@ -355,9 +355,9 @@ const ProfileDetailsScreen = () => {
 								!isEditMode && !!form.phone ? styles.disabledInput : null
 							]}
 							value={
-								form.phone.startsWith(selectedCountry.code)
+								form.phone && typeof form.phone === 'string' && form.phone.startsWith(selectedCountry.code)
 									? form.phone.slice(selectedCountry.code.length)
-									: form.phone
+									: form.phone || ""
 							}
 							onChangeText={text => {
 								// Simplified phone input handler
