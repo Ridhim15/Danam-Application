@@ -6,7 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import SecondScreen from "../screens/SecondScreen";
 import MainTabs from "./MainTabs";
-import ProfileDetailsScreen from "../prof_details";
+import ProfileDetailsScreen from "../screens/prof_detailstails";
 import SchedulePickupScreen from "../screens/(donor)/schedule";
 import PickupScheduledScreen from "../screens/(donor)/pickupScheduled";
 import RoleScreen from "../screens/role";

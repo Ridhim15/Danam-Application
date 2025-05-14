@@ -8,7 +8,7 @@ import {
   Image,
 } from "react-native";
 import { supabase } from "../../initSupabase";
-import { AuthStackParamList } from "@types/navigation";
+import { AuthStackParamList } from "../../types/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
   Layout,

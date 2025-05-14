@@ -8,7 +8,7 @@ import TabBarText from "../components/utils/TabBarText"
 import Home from "../screens/(donor)/Home"
 import About from "../screens/About"
 import Profile from "../screens/(donor)/Profile"
-import ProfileDetailsScreen from "../prof_details"
+import ProfileDetailsScreen from "../screens/prof_detailstails"
 import CommunityScreen from "../screens/Community" // Import from screens directory
 
 const Tabs = createBottomTabNavigator()

@@ -20,7 +20,7 @@ const HomeScreen = () => {
 				{/* Header */}
 				<Text style={styles.header}>Danam</Text>
 				{/* Slideshow Image */}
-				<Image source={require("../../assets/images/nange.jpg")} style={styles.slideshowImage} />
+				<Image source={require("@assets/images/nange.jpg")} style={styles.slideshowImage} />
 				{/* Subtitle */}
 				<Text style={styles.subtitle}>
 					Your Donations can change lives. Join us in our mission to help those in need
@@ -28,10 +28,10 @@ const HomeScreen = () => {
 				{/* Donation Categories */}
 				<View style={styles.gridContainer}>
 					{[
-						{ name: "Packaged Food", img: require("../../assets/images/paper-bag.png") },
-						{ name: "Books", img: require("../../../assets/images/book.png") },
-						{ name: "Clothes", img: require("../../../assets/images/brand.png") },
-						{ name: "E-Waste", img: require("../../../assets/images/ewaste.png") },
+						{ name: "Packaged Food", img: require("@assets/images/paper-bag.png") },
+						{ name: "Books", img: require("@assets/images/book.png") },
+						{ name: "Clothes", img: require("@assets/images/brand.png") },
+						{ name: "E-Waste", img: require("@assets/images/ewaste.png") },
 					].map((item, index) => (
 						<View key={index} style={styles.gridItem}>
 							<Image source={item.img} style={styles.gridImage} />
@@ -46,11 +46,11 @@ const HomeScreen = () => {
 				<View style={styles.ngoContainer}>
 					<Text style={styles.ngoTitle}>Nearest NGO's</Text>
 					{[
-						{ name: "Kalpvriksh - Ek Chota Prayas NGO", email: "kalpvriksh@ngo.org", img: require("../../assets/images/dalla.png") },
-						{ name: "GARV - a genius and real voice NGO", email: "garv@ngo.org", img: require("../../assets/images/dalla.png") },
-						{ name: "Self Awakening Mission NGO", email: "selfawakening@ngo.org", img: require("../../assets/images/dalla.png") },
-						{ name: "Scope for Change", email: "scopeforchange@ngo.org", img: require("../../assets/images/dalla.png") },
-						{ name: "Guru daani foundation", email: "gurudaani@foundation.org", img: require("../../assets/images/dalla.png") },
+						{ name: "Kalpvriksh - Ek Chota Prayas NGO", email: "kalpvriksh@ngo.org", img: require("@assets/images/dalla.png") },
+						{ name: "GARV - a genius and real voice NGO", email: "garv@ngo.org", img: require("@assets/images/dalla.png") },
+						{ name: "Self Awakening Mission NGO", email: "selfawakening@ngo.org", img: require("@assets/images/dalla.png") },
+						{ name: "Scope for Change", email: "scopeforchange@ngo.org", img: require("@assets/images/dalla.png") },
+						{ name: "Guru daani foundation", email: "gurudaani@foundation.org", img: require("@assets/images/dalla.png") },
 					].map((ngo, index) => (
 						<View key={index} style={styles.ngoItem}>
 							<Image source={ngo.img} style={styles.ngoImage} />
