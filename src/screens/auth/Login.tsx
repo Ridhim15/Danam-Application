@@ -38,19 +38,19 @@ export default function ({ navigation }: NativeStackScreenProps<AuthStackParamLi
 				>
 					<View
 						style={{
-							flex: 1,
 							justifyContent: "center",
 							alignItems: "center",
+							width: "100%",
 							backgroundColor: isDarkmode ? "#17171E" : themeColor.white100,
 						}}
 					>
 						<Image
 							resizeMode='contain'
 							style={{
+								width: "100%",
 								height: 220,
-								width: 220,
 							}}
-							source={require("../../../assets/images/login.png")}
+							source={require("@assets/images/banner.png")}
 						/>
 					</View>
 					<View

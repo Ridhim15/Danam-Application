@@ -1,13 +1,14 @@
 import React from "react"
-import { Image, StyleSheet, Text, TouchableOpacity, View, Alert } from "react-native"
-import { useNavigation } from "@react-navigation/native"
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import { useNavigation } from '@react-navigation/native'
+import { MainStackParamList } from "../types/navigation"
 
 const RoleScreen = () => {
-	const navigation = useNavigation();
-
+	const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
 	return (
 		<View style={styles.container}>
-			<Image source={require("../../assets/images/dalla.png")} style={styles.logo} />
+			<Image source={require("@assets/images/dalla.png")} style={styles.logo} />
 			<Text style={styles.title}>Welcome to Danam!</Text>
 			<Text style={styles.subtitle}>How would you like to contribute?</Text>
 
@@ -20,18 +21,7 @@ const RoleScreen = () => {
 
 			<TouchableOpacity 
 				style={[styles.button, styles.ngoButton]}
-				onPress={() => {
-					Alert.alert(
-						"Feature Coming Soon",
-						"The NGO dashboard is currently under development. We'll redirect you to the main screen for now.",
-						[
-							{ 
-								text: "OK", 
-								onPress: () => navigation.navigate('MainTabs', { screen: 'Home' }) 
-							}
-						]
-					);
-				}}
+				onPress={() => navigation.navigate('NGODashboard')}
 			>
 				<Text style={styles.buttonText}>I am an NGO</Text>
 			</TouchableOpacity>

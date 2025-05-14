@@ -12,6 +12,7 @@ import PickupScheduledScreen from "../screens/pickupScheduled";
 import RoleScreen from "../screens/role";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import VolunteerScreen from "../screens/Volunteer";
+import NGODashboard from "../screens/NGODashboard";
 
 // Key for storing profile completion status
 const PROFILE_COMPLETED_KEY = "profile_completed_status";
@@ -100,6 +101,7 @@ const Main = () => {
       <MainStack.Screen name="SchedulePickup" component={SchedulePickupScreen} />
       <MainStack.Screen name="PickupScheduled" component={PickupScheduledScreen} />
       <MainStack.Screen name="Volunteer" component={VolunteerScreen} />
+      <MainStack.Screen name="NGODashboard" component={NGODashboard} />
     </MainStack.Navigator>
   );
 };

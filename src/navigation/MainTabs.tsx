@@ -50,7 +50,7 @@ const MainTabs = () => {
 					tabBarLabel: ({ focused }) => <TabBarText focused={focused} title='Profile' />,
 					tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} icon={"person-outline"} />,
 				}}
-			/>
+			 />
 		</Tabs.Navigator>
 	)
 }
