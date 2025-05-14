@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,37 +9,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-
-const donationItems = [
-  {
-    name: "Packaged Food",
-    icon: "fast-food-outline",
-    count: 156,
-    color: "#F8D3A7",
-    img: require("@assets/images/paper-bag.png"),
-  },
-  {
-    name: "Books",
-    icon: "book-outline",
-    count: 89,
-    color: "#FF6B6B",
-    img: require("@assets/images/book.png"),
-  },
-  {
-    name: "Clothes",
-    icon: "shirt-outline",
-    count: 213,
-    color: "#FFB347",
-    img: require("@assets/images/brand.png"),
-  },
-  {
-    name: "Medical Aid",
-    icon: "medkit-outline",
-    count: 42,
-    color: "#77DD77",
-    img: require("@assets/images/medicine.png"),
-  },
-];
+import { supabase } from "../../initSupabase";
 
 const volunteers = [
   {
@@ -62,19 +32,103 @@ const volunteers = [
   },
 ];
 
-const totalDonations = donationItems.reduce((sum, item) => sum + item.count, 0);
-
 export default function NGODashboard({ navigation }: any) {
   const [activeTab, setActiveTab] = useState("home");
+  const [donationStats, setDonationStats] = useState({
+    food: 0,
+    books: 0,
+    clothes: 0,
+    medical: 0,
+  });
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [ngoList, setNgoList] = useState<string[]>([]);
+  const [selectedNgo, setSelectedNgo] = useState<string>("");
+  const [showNgoModal, setShowNgoModal] = useState(false);
+
+  useEffect(() => {
+    // Fetch unique NGO names from the donation table
+    const fetchNgos = async () => {
+      const { data, error } = await supabase
+        .from("donation")
+        .select("ngo")
+        .neq("ngo", null);
+      if (!error && data) {
+        const uniqueNgos = Array.from(new Set(data.map((row) => row.ngo).filter(Boolean)));
+        setNgoList(uniqueNgos);
+        if (uniqueNgos.length > 0 && !selectedNgo) setSelectedNgo(uniqueNgos[0]);
+      }
+    };
+    fetchNgos();
+  }, []);
+
+  useEffect(() => {
+    if (!selectedNgo) return;
+    const fetchDonationStats = async () => {
+      setLoadingStats(true);
+      try {
+        // Fetch all donations for the selected NGO
+        const { data, error } = await supabase
+          .from("donation")
+          .select("meds, books, clothes, food")
+          .eq("ngo", selectedNgo);
+        if (error) throw error;
+        let food = 0,
+          books = 0,
+          clothes = 0,
+          medical = 0;
+        data.forEach((row) => {
+          food += row.food || 0;
+          books += row.books || 0;
+          clothes += row.clothes || 0;
+          medical += row.meds || 0;
+        });
+        setDonationStats({ food, books, clothes, medical });
+      } catch (e) {
+        setDonationStats({ food: 0, books: 0, clothes: 0, medical: 0 });
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+    fetchDonationStats();
+  }, [selectedNgo]);
+
+  const donationItems = [
+    {
+      name: "Packaged Food",
+      icon: "fast-food-outline",
+      count: donationStats.food,
+      color: "#F8D3A7",
+      img: require("@assets/images/paper-bag.png"),
+    },
+    {
+      name: "Books",
+      icon: "book-outline",
+      count: donationStats.books,
+      color: "#FF6B6B",
+      img: require("@assets/images/book.png"),
+    },
+    {
+      name: "Clothes",
+      icon: "shirt-outline",
+      count: donationStats.clothes,
+      color: "#FFB347",
+      img: require("@assets/images/brand.png"),
+    },
+    {
+      name: "Medical Aid",
+      icon: "medkit-outline",
+      count: donationStats.medical,
+      color: "#77DD77",
+      img: require("@assets/images/medicine.png"),
+    },
+  ];
+
+  const totalDonations = donationItems.reduce((sum, item) => sum + item.count, 0);
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Danam</Text>
-        <View style={styles.headerRight}>
-          <Text style={styles.headerPercent}>49%</Text>
-          <View style={styles.headerCircle} />
-        </View>
       </View>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* NGO Info */}
@@ -85,8 +139,39 @@ export default function NGODashboard({ navigation }: any) {
             resizeMode="cover"
           />
           <View style={{ flex: 1 }}>
-            <Text style={styles.ngoName}>Kalpvriksh - Ek Chota Prayas NGO</Text>
-            <Text style={styles.ngoEmail}>kalpvriksh@ngo.org</Text>
+            {/* Custom Dropdown for NGO Name */}
+            <TouchableOpacity
+              style={{ paddingVertical: 10, paddingHorizontal: 12, backgroundColor: '#f5f0ff', borderRadius: 8, borderWidth: 1, borderColor: '#8a4baf', marginBottom: 4 }}
+              onPress={() => setShowNgoModal(true)}
+              activeOpacity={0.7}
+            >
+              <Text style={{ color: '#8a4baf', fontWeight: 'bold', fontSize: 18 }}>
+                {selectedNgo || 'Select NGO'}
+              </Text>
+            </TouchableOpacity>
+            {/* Modal for NGO List */}
+            {showNgoModal && (
+              <View style={{ position: 'absolute', top: 50, left: 0, right: 0, backgroundColor: '#fff', borderRadius: 8, borderWidth: 1, borderColor: '#8a4baf', zIndex: 100 }}>
+                <ScrollView style={{ maxHeight: 200 }}>
+                  {ngoList.map((ngo, idx) => (
+                    <TouchableOpacity
+                      key={idx}
+                      style={{ padding: 12, borderBottomWidth: idx < ngoList.length - 1 ? 1 : 0, borderBottomColor: '#eee' }}
+                      onPress={() => {
+                        setSelectedNgo(ngo);
+                        setShowNgoModal(false);
+                      }}
+                    >
+                      <Text style={{ color: '#4A148C', fontWeight: selectedNgo === ngo ? 'bold' : 'normal' }}>{ngo}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+                <TouchableOpacity onPress={() => setShowNgoModal(false)} style={{ padding: 10, alignItems: 'center' }}>
+                  <Text style={{ color: '#8a4baf', fontWeight: 'bold' }}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            <Text style={styles.ngoEmail}>{selectedNgo ? `${selectedNgo}@ngo.org` : ''}</Text>
           </View>
         </View>
         {/* Banner */}
@@ -104,23 +189,32 @@ export default function NGODashboard({ navigation }: any) {
         </View>
         {/* Donation Stats */}
         <Text style={styles.sectionTitle}>Donation Statistics</Text>
-        <View style={styles.statsGrid}>
-          {donationItems.map((item, idx) => (
-            <View key={idx} style={[styles.statCard, { backgroundColor: item.color }]}>  
-              <Image source={item.img} style={styles.statIcon} />
-              <Text style={styles.statName}>{item.name}</Text>
-              <Text style={styles.statCount}>{item.count}</Text>
-              <View style={styles.progressBarBg}>
-                <View
-                  style={[
-                    styles.progressBarFill,
-                    { width: `${(item.count / totalDonations) * 100}%`, backgroundColor: '#8a4baf' },
-                  ]}
-                />
+        {loadingStats ? (
+          <View style={{ alignItems: "center", marginVertical: 20 }}>
+            <Text>Loading stats...</Text>
+          </View>
+        ) : (
+          <View style={styles.statsGrid}>
+            {donationItems.map((item, idx) => (
+              <View key={idx} style={[styles.statCard, { backgroundColor: item.color }]}>
+                <Image source={item.img} style={styles.statIcon} />
+                <Text style={styles.statName}>{item.name}</Text>
+                <Text style={styles.statCount}>{item.count}</Text>
+                <View style={styles.progressBarBg}>
+                  <View
+                    style={[
+                      styles.progressBarFill,
+                      {
+                        width: `${totalDonations > 0 ? (item.count / totalDonations) * 100 : 0}%`,
+                        backgroundColor: "#8a4baf",
+                      },
+                    ]}
+                  />
+                </View>
               </View>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        )}
         {/* Total Donations */}
         <View style={styles.totalCard}>
           <Text style={styles.totalTitle}>Total Donations</Text>
@@ -148,7 +242,7 @@ export default function NGODashboard({ navigation }: any) {
         </View>
       </ScrollView>
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
+      {/* <View style={styles.bottomNav}>
         <TouchableOpacity
           style={styles.navItem}
           onPress={() => setActiveTab("community")}
@@ -203,7 +297,7 @@ export default function NGODashboard({ navigation }: any) {
             Profile
           </Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 }

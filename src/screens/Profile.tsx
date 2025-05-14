@@ -70,7 +70,6 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 				
 				editProfile: "प्रोफाइल संपादित करें",
 				
-				
 				contactInformation: "संपर्क जानकारी",
 				phone: "फोन",
 				address: "पता",
@@ -136,8 +135,11 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 							setLoading(true)
 							const { error } = await supabase.auth.signOut()
 							if (error) throw error
-							// Navigate as per your routing structure
-							navigation.navigate('Auth')
+							// Reset the stack to the MainTabs screen
+							navigation.reset({
+								index: 0,
+								routes: [{ name: 'MainTabs' }],
+							})
 						} catch (error) {
 							console.error("Error logging out:", error)
 							Alert.alert(t("error"), t("logoutError"))
@@ -225,7 +227,7 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 							</View>
 							<TouchableOpacity 
 								style={styles.editProfileButton} 
-								onPress={() => navigation.navigate('ProfileDetails', { isEditMode: true })}
+								onPress={() => navigation.navigate('ProfileDetails', { isEditMode: true, userRole: profile?.role || undefined })}
 							>
 								<Text style={styles.editProfileText}>{t("editProfile")}</Text>
 							</TouchableOpacity>

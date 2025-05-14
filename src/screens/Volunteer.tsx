@@ -264,7 +264,7 @@ const VolunteerScreen = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor="#2196F3" barStyle="light-content" />
+      <StatusBar backgroundColor="#4A148C" barStyle="light-content" />
 
       {/* Header - Tabs with proper insets */}
       {showMyWork ? (
@@ -302,7 +302,7 @@ const VolunteerScreen = () => {
 
             {loading ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#2196F3" />
+                <ActivityIndicator size="large" color="#4A148C" />
                 <Text style={styles.loadingText}>Loading jobs...</Text>
               </View>
             ) : acceptedJobs.length === 0 ? (
@@ -373,7 +373,7 @@ const VolunteerScreen = () => {
 
               {loading ? (
                 <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color="#2196F3" />
+                  <ActivityIndicator size="large" color="#4A148C" />
                   <Text style={styles.loadingText}>Loading donations...</Text>
                 </View>
               ) : jobs.length === 0 ? (
@@ -485,7 +485,7 @@ const VolunteerScreen = () => {
       )}
 
       {/* Bottom Navigation with proper insets */}
-      <View style={[styles.bottomNav, { paddingBottom: insets.bottom > 0 ? insets.bottom : 0 }]}>
+      {/* <View style={[styles.bottomNav, { paddingBottom: insets.bottom > 0 ? insets.bottom : 0 }]}>
         <TouchableOpacity style={styles.navItem}>
           <Text style={styles.navText}>Schedule</Text>
         </TouchableOpacity>
@@ -497,7 +497,7 @@ const VolunteerScreen = () => {
         <TouchableOpacity style={styles.navItem}>
           <Text style={styles.navText}>Profile</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -505,12 +505,12 @@ const VolunteerScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#F4ECFF", // Light Purple
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   container: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#F4ECFF", // Light Purple
     display: "flex",
     flexDirection: "column",
   },
@@ -521,7 +521,7 @@ const styles = StyleSheet.create({
   },
   tabs: {
     flexDirection: "row",
-    backgroundColor: "#2196F3",
+    backgroundColor: "#4A148C", // Deep Purple
     height: 50,
     zIndex: 1,
   },
@@ -532,20 +532,20 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderBottomWidth: 3,
-    borderBottomColor: "#FFFFFF",
+    borderBottomColor: "#6A1B9A", // Medium Purple
   },
   tabText: {
-    color: "rgba(255, 255, 255, 0.7)",
+    color: "#B39DDB", // Light purple for inactive tab
     fontSize: 16,
     fontWeight: "bold",
   },
   activeTabText: {
-    color: "#FFFFFF",
+    color: "#6A1B9A", // Medium Purple
   },
   myWorkHeader: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#2196F3",
+    backgroundColor: "#4A148C", // Deep Purple
     height: 50,
     paddingHorizontal: 15,
     zIndex: 1,
@@ -569,7 +569,7 @@ const styles = StyleSheet.create({
   jobsTitle: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#333",
+    color: "#4A148C", // Deep Purple
     marginBottom: 15,
   },
   loadingContainer: {
@@ -580,7 +580,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: "#666",
+    color: "#6A1B9A", // Medium Purple
   },
   noJobsContainer: {
     flex: 1,
@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
   },
   noJobsText: {
     fontSize: 16,
-    color: "#666",
+    color: "#6A1B9A", // Medium Purple
   },
   jobsList: {
     flex: 1,
@@ -599,7 +599,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   availableJobCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#EDE7F6", // Soft Purple Card Background
     borderRadius: 10,
     padding: 15,
     marginBottom: 15,
@@ -610,7 +610,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   acceptedJobCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#EDE7F6", // Soft Purple Card Background
     borderRadius: 10,
     padding: 15,
     marginBottom: 15,
@@ -637,12 +637,12 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#2196F3",
+    color: "#4A148C", // Deep Purple
     marginBottom: 3,
   },
   userId: {
     fontSize: 12,
-    color: "#666",
+    color: "#6A1B9A", // Medium Purple
     marginBottom: 5,
   },
   pendingLabel: {
@@ -652,14 +652,14 @@ const styles = StyleSheet.create({
   },
   donationDetailsContainer: {
     marginBottom: 15,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#F4ECFF", // Light Purple
     padding: 10,
     borderRadius: 5,
   },
   donationDetailsTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
+    color: "#4A148C", // Deep Purple
     marginBottom: 8,
   },
   donationItemsGrid: {
@@ -681,7 +681,7 @@ const styles = StyleSheet.create({
   },
   donationItemText: {
     fontSize: 14,
-    color: "#555",
+    color: "#6A1B9A", // Medium Purple
   },
   errorBox: {
     backgroundColor: "#FFEBEE",
@@ -701,11 +701,11 @@ const styles = StyleSheet.create({
   jobDetailLabel: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
+    color: "#4A148C", // Deep Purple
   },
   jobDetailValue: {
     fontSize: 16,
-    color: "#666",
+    color: "#6A1B9A", // Medium Purple
     textAlign: "right",
     flex: 1,
     marginLeft: 10,
@@ -716,26 +716,26 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   acceptButton: {
-    backgroundColor: "#D32F2F",
+    backgroundColor: "#6A1B9A", // Medium Purple
     borderRadius: 5,
     paddingVertical: 12,
     alignItems: "center",
     marginTop: 10,
   },
   acceptButtonText: {
-    color: "#FFFFFF",
+    color: "#FFF",
     fontSize: 16,
     fontWeight: "bold",
   },
   markCompletedButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#4A148C", // Deep Purple
     borderRadius: 5,
     paddingVertical: 12,
     alignItems: "center",
     marginTop: 10,
   },
   markCompletedButtonText: {
-    color: "#FFFFFF",
+    color: "#FFF",
     fontSize: 16,
     fontWeight: "bold",
   },
@@ -749,14 +749,14 @@ const styles = StyleSheet.create({
   jobProfileTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#2196F3",
+    color: "#4A148C", // Deep Purple
     marginBottom: 15,
   },
   myWorkSection: {
     padding: 15,
   },
   myWorkCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#EDE7F6", // Soft Purple Card Background
     borderRadius: 10,
     padding: 20,
     flexDirection: "row",
@@ -771,18 +771,18 @@ const styles = StyleSheet.create({
   myWorkTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: "#4A148C", // Deep Purple
   },
   myWorkCount: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#2196F3",
+    color: "#6A1B9A", // Medium Purple
   },
   bottomNav: {
     flexDirection: "row",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#EDE7F6", // Soft Purple
     borderTopWidth: 1,
-    borderTopColor: "#E0E0E0",
+    borderTopColor: "#D1C4E9", // Light Purple
     height: 50,
     position: "relative",
     bottom: 0,
@@ -797,10 +797,10 @@ const styles = StyleSheet.create({
   },
   navText: {
     fontSize: 14,
-    color: "#666",
+    color: "#4A148C", // Deep Purple
   },
   activeNavText: {
-    color: "#2196F3",
+    color: "#6A1B9A", // Medium Purple
     fontWeight: "bold",
   },
 });

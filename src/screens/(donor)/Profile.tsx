@@ -137,7 +137,7 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 							const { error } = await supabase.auth.signOut()
 							if (error) throw error
 							// Navigate as per your routing structure
-							navigation.navigate("Login" as never)
+							navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] })
 						} catch (error) {
 							console.error("Error logging out:", error)
 							Alert.alert(t("error"), t("logoutError"))
