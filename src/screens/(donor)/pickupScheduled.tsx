@@ -9,12 +9,13 @@ import {
 } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from "expo-status-bar";
+import { router } from "expo-router";
 
 const PickupScheduledScreen = () => {
     const navigation = useNavigation();
 
     const handleBackToHome = () => {
-        navigation.navigate('MainTabs');
+        router.push("/(donor)/Home");
     };
 
     return (
@@ -24,7 +25,7 @@ const PickupScheduledScreen = () => {
             <View style={styles.contentContainer}>
                 {/* Danam Logo */}
                 <Image 
-                    source={require("../../assets/icons/logo.png")} 
+                    source={require("@assets/icons/logo.png")} 
                     style={styles.logo} 
                     resizeMode="contain"
                 />

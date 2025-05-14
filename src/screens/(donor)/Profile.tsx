@@ -11,10 +11,11 @@ import {
 	Alert,
 } from "react-native"
 import { Session } from "@supabase/supabase-js"
-import { supabase } from "../initSupabase"
+import { supabase } from "../../initSupabase"
 import { SafeAreaView } from "react-native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { MainStackParamList } from "../types/navigation"
+import { MainStackParamList } from "../../types/navigation"
+import { router } from "expo-router"
 
 // User profile interface based on the actual database schema with nullable fields
 interface UserProfile {
@@ -137,7 +138,7 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 							const { error } = await supabase.auth.signOut()
 							if (error) throw error
 							// Navigate as per your routing structure
-							navigation.navigate('Auth')
+							router.push("/auth/Login")
 						} catch (error) {
 							console.error("Error logging out:", error)
 							Alert.alert(t("error"), t("logoutError"))
@@ -199,7 +200,7 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 								source={
 									session?.user?.user_metadata?.picture
 										? { uri: session.user.user_metadata.picture }
-										: require("../../assets/images/profile_def_m.png")
+										: require("@assets/images/profile_def_m.png")
 								}
 								style={styles.profileImage}
 							/>
@@ -225,7 +226,7 @@ export default function ({ navigation }: NativeStackScreenProps<MainStackParamLi
 							</View>
 							<TouchableOpacity 
 								style={styles.editProfileButton} 
-								onPress={() => navigation.navigate('ProfileDetails', { isEditMode: true })}
+								onPress={() => router.push("/prof_details?isEditMode=true")}
 							>
 								<Text style={styles.editProfileText}>{t("editProfile")}</Text>
 							</TouchableOpacity>

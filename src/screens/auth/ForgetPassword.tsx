@@ -8,7 +8,7 @@ import {
   Image,
 } from "react-native";
 import { supabase } from "../../initSupabase";
-import { AuthStackParamList } from "../../types/navigation";
+import { AuthStackParamList } from "@types/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
   Layout,
@@ -18,6 +18,7 @@ import {
   useTheme,
   themeColor,
 } from "react-native-rapi-ui";
+import { router } from "expo-router";
 
 export default function ({
   navigation,
@@ -62,7 +63,7 @@ export default function ({
                 height: 220,
                 width: 220,
               }}
-              source={require("../../../assets/images/forget.png")}
+              source={require("@assets/images/forget.png")}
             />
           </View>
           <View
@@ -89,7 +90,6 @@ export default function ({
               placeholder="Enter your email"
               value={email}
               autoCapitalize="none"
-              autoCompleteType="off"
               autoCorrect={false}
               keyboardType="email-address"
               onChangeText={(text) => setEmail(text)}
@@ -116,7 +116,7 @@ export default function ({
               <Text size="md">Already have an account?</Text>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate("Login");
+                  router.push("/auth/Login");
                 }}
               >
                 <Text

@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { supabase } from "../initSupabase";
+import { router } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -66,7 +67,7 @@ const WelcomeScreen = () => {
   }, [fadeAnim, slideAnim]);
 
   const handleContinue = () => {
-    navigation.navigate('RoleSelect');
+    router.push("/role");
   };
 
   return (
@@ -81,7 +82,7 @@ const WelcomeScreen = () => {
         ]}
       >
         <Image 
-          source={require("../../assets/images/DALL·E 2025-03-06 01.06.40 - A modern and minimalistic round logo for 'Danam', a donation app. The design should have a circular shape with a sleek, purple and white color scheme.png")} 
+          source={require("@assets/images/banner.png")} 
           style={styles.logo} 
         />
         

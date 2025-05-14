@@ -7,11 +7,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import SecondScreen from "../screens/SecondScreen";
 import MainTabs from "./MainTabs";
 import ProfileDetailsScreen from "../prof_details";
-import SchedulePickupScreen from "../screens/schedule";
-import PickupScheduledScreen from "../screens/pickupScheduled";
+import SchedulePickupScreen from "../screens/(donor)/schedule";
+import PickupScheduledScreen from "../screens/(donor)/pickupScheduled";
 import RoleScreen from "../screens/role";
 import WelcomeScreen from "../screens/WelcomeScreen";
-import VolunteerScreen from "../screens/Volunteer";
+import VolunteerScreen from "../screens/(volunteer)/Volunteer";
+import VolunteerProfileScreen from "../screens/(volunteer)/volunteerProf";
 
 // Key for storing profile completion status
 const PROFILE_COMPLETED_KEY = "profile_completed_status";
@@ -100,6 +101,7 @@ const Main = () => {
       <MainStack.Screen name="SchedulePickup" component={SchedulePickupScreen} />
       <MainStack.Screen name="PickupScheduled" component={PickupScheduledScreen} />
       <MainStack.Screen name="Volunteer" component={VolunteerScreen} />
+      <MainStack.Screen name="VolunteerProfile" component={VolunteerProfileScreen} />
     </MainStack.Navigator>
   );
 };

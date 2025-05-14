@@ -17,6 +17,7 @@ import { supabase } from "./initSupabase"
 import { useNavigation } from "@react-navigation/native"
 import { MainTabsParamList } from "./types/navigation"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import { router } from "expo-router"
 
 // Key for storing profile completion status - must match MainStack.tsx
 const PROFILE_COMPLETED_KEY = "profile_completed_status"
@@ -122,7 +123,7 @@ const ProfileDetailsScreen = () => {
 					// If profile is already complete and we're not in edit mode, redirect to MainTabs with Home tab
 					if (complete && !editMode) {
 						setTimeout(() => {
-							navigation.navigate('MainTabs', { screen: 'Home' })
+							router.push("/(donor)/Home")
 						}, 1000)
 					}
 				} else {
@@ -210,6 +211,21 @@ const ProfileDetailsScreen = () => {
 			}
 			
 			if (error) throw error
+
+			// --- Volunteer Table Sync ---
+			if (form.role === 'Volunteer') {
+				const volunteerData = {
+					name: form.username,
+					address: form.address,
+					phone: form.phone,
+					uid: session.user.id,
+				};
+				// Upsert volunteer info (insert or update by uid)
+				const { error: volunteerError } = await supabase
+					.from('volunteer')
+					.upsert([volunteerData], { onConflict: 'uid' });
+				if (volunteerError) throw volunteerError;
+			}
 			
 			// Mark the profile as completed in AsyncStorage
 			try {
@@ -219,12 +235,26 @@ const ProfileDetailsScreen = () => {
 				console.error("Error saving to AsyncStorage:", storageError)
 			}
 			
-			Alert.alert("Success", "Profile updated successfully!", [
-				{
-					text: "Continue",
-					onPress: () => navigation.navigate('MainTabs', { screen: 'Home' })
-				}
-			])
+			// Get the navigation params
+			const params = navigation.getState().routes.find(r => r.name === 'ProfileDetails')?.params
+			
+			// Check if there is a returnScreen parameter
+			if (params && params.returnScreen) {
+				Alert.alert("Success", "Profile updated successfully!", [
+					{
+						text: "Continue",
+						onPress: () => router.push(`/(volunteer)/volunteerProf`)
+					}
+				])
+			} else {
+				// Default navigation to Home
+				Alert.alert("Success", "Profile updated successfully!", [
+					{
+						text: "Continue",
+						onPress: () => router.push("/(donor)/Home")
+					}
+				])
+			}
 		} catch (e: any) {
 			Alert.alert("Error", e.message || "Could not update profile.")
 		} finally {

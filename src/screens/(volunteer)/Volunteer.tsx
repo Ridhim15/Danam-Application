@@ -12,8 +12,9 @@ import {
   Platform
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { supabase } from "../initSupabase";
+import { supabase } from "../../initSupabase";
 import { useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
 
 // Type for donation job
 interface DonationJob {
@@ -386,7 +387,7 @@ const VolunteerScreen = () => {
                     <View key={job.id} style={styles.availableJobCard}>
                       <View style={styles.jobHeader}>
                         <Image
-                          source={require("../../assets/images/profile_def_m.png")}
+                          source={require("@assets/images/profile_def_m.png")}
                           style={styles.userProfileImage}
                         />
                         <View style={styles.userInfo}>
@@ -402,7 +403,7 @@ const VolunteerScreen = () => {
                           {job.meds > 0 && (
                             <View style={styles.donationItem}>
                               <Image
-                                source={require("../../assets/images/medicine.png")}
+                                source={require("@assets/images/medicine.png")}
                                 style={styles.donationItemIcon}
                               />
                               <Text style={styles.donationItemText}>Medicine: {job.meds}</Text>
@@ -411,7 +412,7 @@ const VolunteerScreen = () => {
                           {job.books > 0 && (
                             <View style={styles.donationItem}>
                               <Image
-                                source={require("../../assets/images/book.png")}
+                                source={require("@assets/images/book.png")}
                                 style={styles.donationItemIcon}
                               />
                               <Text style={styles.donationItemText}>Books: {job.books}</Text>
@@ -420,7 +421,7 @@ const VolunteerScreen = () => {
                           {job.clothes > 0 && (
                             <View style={styles.donationItem}>
                               <Image
-                                source={require("../../assets/images/laundry-machine.png")}
+                                source={require("@assets/images/laundry-machine.png")}
                                 style={styles.donationItemIcon}
                               />
                               <Text style={styles.donationItemText}>Clothes: {job.clothes}</Text>
@@ -429,7 +430,7 @@ const VolunteerScreen = () => {
                           {job.food > 0 && (
                             <View style={styles.donationItem}>
                               <Image
-                                source={require("../../assets/images/cooking.png")}
+                                source={require("@assets/images/cooking.png")}
                                 style={styles.donationItemIcon}
                               />
                               <Text style={styles.donationItemText}>Food: {job.food}</Text>
@@ -494,7 +495,10 @@ const VolunteerScreen = () => {
           <Text style={[styles.navText, styles.activeNavText]}>Home</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navItem}>
+        <TouchableOpacity 
+          style={styles.navItem}
+          onPress={() => router.push("/(volunteer)/volunteerProf")}
+        >
           <Text style={styles.navText}>Profile</Text>
         </TouchableOpacity>
       </View>

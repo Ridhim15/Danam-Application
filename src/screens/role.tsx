@@ -1,19 +1,17 @@
 import React from "react"
 import { Image, StyleSheet, Text, TouchableOpacity, View, Alert } from "react-native"
-import { useNavigation } from "@react-navigation/native"
+import { router } from "expo-router"
 
 const RoleScreen = () => {
-	const navigation = useNavigation();
-
 	return (
 		<View style={styles.container}>
-			<Image source={require("../../assets/images/dalla.png")} style={styles.logo} />
+			<Image source={require("@assets/images/dalla.png")} style={styles.logo} />
 			<Text style={styles.title}>Welcome to Danam!</Text>
 			<Text style={styles.subtitle}>How would you like to contribute?</Text>
 
 			<TouchableOpacity 
 				style={[styles.button, styles.donorButton]}
-				onPress={() => navigation.navigate('MainTabs', { screen: 'Home' })}
+				onPress={() => router.push("/(donor)/Home")}
 			>
 				<Text style={styles.buttonText}>I am a Donor</Text>
 			</TouchableOpacity>
@@ -27,7 +25,7 @@ const RoleScreen = () => {
 						[
 							{ 
 								text: "OK", 
-								onPress: () => navigation.navigate('MainTabs', { screen: 'Home' }) 
+								onPress: () => router.push("/(donor)/Home")
 							}
 						]
 					);
@@ -38,7 +36,7 @@ const RoleScreen = () => {
 
 			<TouchableOpacity 
 				style={[styles.button, styles.volunteerButton]}
-				onPress={() => navigation.navigate('Volunteer')}
+				onPress={() => router.push("/(volunteer)/Volunteer")}
 			>
 				<Text style={styles.buttonText}>I am a Volunteer</Text>
 			</TouchableOpacity>

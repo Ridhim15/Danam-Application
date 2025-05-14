@@ -9,8 +9,8 @@ const HomeScreen = () => {
 	const navigation = useNavigation();
 
 	const handleDonatePress = () => {
-		// Using the navigate method with the screen name directly
-		navigation.navigate("SchedulePickup")
+		// Using the router.push method with the screen path directly
+		router.push("/(donor)/schedule")
 	};
 
 	return (
@@ -29,9 +29,9 @@ const HomeScreen = () => {
 				<View style={styles.gridContainer}>
 					{[
 						{ name: "Packaged Food", img: require("../../assets/images/paper-bag.png") },
-						{ name: "Books", img: require("../../assets/images/book.png") },
-						{ name: "Clothes", img: require("../../assets/images/brand.png") },
-						{ name: "E-Waste", img: require("../../assets/images/ewaste.png") },
+						{ name: "Books", img: require("../../../assets/images/book.png") },
+						{ name: "Clothes", img: require("../../../assets/images/brand.png") },
+						{ name: "E-Waste", img: require("../../../assets/images/ewaste.png") },
 					].map((item, index) => (
 						<View key={index} style={styles.gridItem}>
 							<Image source={item.img} style={styles.gridImage} />

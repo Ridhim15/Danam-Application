@@ -2,8 +2,9 @@ import React, { useState } from "react"
 import { StatusBar } from "expo-status-bar"
 import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image } from "react-native"
 import { supabase } from "../../initSupabase"
-import { AuthStackParamList } from "../../types/navigation"
+import { AuthStackParamList } from "@types/navigation"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { router } from "expo-router"
 
 import { Layout, Text, TextInput, Button, useTheme, themeColor } from "react-native-rapi-ui"
 
@@ -38,19 +39,19 @@ export default function ({ navigation }: NativeStackScreenProps<AuthStackParamLi
 				>
 					<View
 						style={{
-							flex: 1,
 							justifyContent: "center",
 							alignItems: "center",
+							width: "100%",
 							backgroundColor: isDarkmode ? "#17171E" : themeColor.white100,
 						}}
 					>
 						<Image
 							resizeMode='contain'
 							style={{
+								width: "100%",
 								height: 220,
-								width: 220,
 							}}
-							source={require("../../../assets/images/login.png")}
+							source={require("@assets/images/banner.png")}
 						/>
 					</View>
 					<View
@@ -114,7 +115,7 @@ export default function ({ navigation }: NativeStackScreenProps<AuthStackParamLi
 							<Text size='md'>Don't have an account?</Text>
 							<TouchableOpacity
 								onPress={() => {
-									navigation.navigate("Register")
+									router.push("/auth/Register")
 								}}
 							>
 								<Text
@@ -138,7 +139,7 @@ export default function ({ navigation }: NativeStackScreenProps<AuthStackParamLi
 						>
 							<TouchableOpacity
 								onPress={() => {
-									navigation.navigate("ForgetPassword")
+									router.push("/auth/ForgetPassword")
 								}}
 							>
 								<Text size='md' fontWeight='bold'>

@@ -5,9 +5,9 @@ import { themeColor, useTheme } from "react-native-rapi-ui"
 import TabBarIcon from "../components/utils/TabBarIcon"
 import TabBarText from "../components/utils/TabBarText"
 
-import Home from "../screens/Home"
+import Home from "../screens/(donor)/Home"
 import About from "../screens/About"
-import Profile from "../screens/Profile"
+import Profile from "../screens/(donor)/Profile"
 import ProfileDetailsScreen from "../prof_details"
 import CommunityScreen from "../screens/Community" // Import from screens directory
 

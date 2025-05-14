@@ -13,7 +13,8 @@ import {
 } from "react-native"
 import { useNavigation } from '@react-navigation/native'
 import { StatusBar } from "expo-status-bar"
-import { supabase } from "../initSupabase"
+import { supabase } from "../../initSupabase"
+import { router } from "expo-router"
 
 const SchedulePickupScreen = () => {
     const navigation = useNavigation();
@@ -21,29 +22,43 @@ const SchedulePickupScreen = () => {
     const [donorAddress, setDonorAddress] = useState("Loading...");
     const [showNgoDropdown, setShowNgoDropdown] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedNgo, setSelectedNgo] = useState(null);
+    interface Ngo {
+        id: number;
+        name: string;
+        email: string;
+        img: any;
+    }
+    
+    const [selectedNgo, setSelectedNgo] = useState<Ngo | null>(null);
     
     // Item selection states
     const [showItemsModal, setShowItemsModal] = useState(false);
     const [selectedItemType, setSelectedItemType] = useState("");
     const [itemQuantity, setItemQuantity] = useState(1);
-    const [donationItems, setDonationItems] = useState([]);
+    interface DonationItem {
+        id: number;
+        type: string;
+        quantity: number;
+        icon: any;
+    }
+
+    const [donationItems, setDonationItems] = useState<DonationItem[]>([]);
     
     // Available item types
     const itemTypes = [
-        { id: 1, name: "Food", icon: require("../../assets/images/paper-bag.png") },
-        { id: 2, name: "Books", icon: require("../../assets/images/book.png") },
-        { id: 3, name: "Clothes", icon: require("../../assets/images/brand.png") },
-        { id: 4, name: "Medicine", icon: require("../../assets/images/medicine.png") },
+        { id: 1, name: "Food", icon: require("@assets/images/paper-bag.png") },
+        { id: 2, name: "Books", icon: require("@assets/images/book.png") },
+        { id: 3, name: "Clothes", icon: require("@assets/images/brand.png") },
+        { id: 4, name: "Medicine", icon: require("@assets/images/medicine.png") },
     ];
     
     // Custom NGO list with your specified NGO names
     const ngoList = [
-        { id: 1, name: "Kalpvriksh - Ek Chota Prayas NGO", email: "kalpvriksh@ngo.org", img: require("../../assets/images/dalla.png") },
-        { id: 2, name: "GARV - a genius and real voice NGO", email: "garv@ngo.org", img: require("../../assets/images/dalla.png") },
-        { id: 3, name: "Self Awakening Mission NGO", email: "selfawakening@ngo.org", img: require("../../assets/images/dalla.png") },
-        { id: 4, name: "Scope for Change", email: "scopeforchange@ngo.org", img: require("../../assets/images/dalla.png") },
-        { id: 5, name: "Guru daani foundation", email: "gurudaani@foundation.org", img: require("../../assets/images/dalla.png") },
+        { id: 1, name: "Kalpvriksh - Ek Chota Prayas NGO", email: "kalpvriksh@ngo.org", img: require("@assets/images/dalla.png") },
+        { id: 2, name: "GARV - a genius and real voice NGO", email: "garv@ngo.org", img: require("@assets/images/dalla.png") },
+        { id: 3, name: "Self Awakening Mission NGO", email: "selfawakening@ngo.org", img: require("@assets/images/dalla.png") },
+        { id: 4, name: "Scope for Change", email: "scopeforchange@ngo.org", img: require("@assets/images/dalla.png") },
+        { id: 5, name: "Guru daani foundation", email: "gurudaani@foundation.org", img: require("@assets/images/dalla.png") },
     ];
     
     // Filter NGOs based on search query
@@ -118,7 +133,7 @@ const SchedulePickupScreen = () => {
             }
             
             // Initialize donation data with default values
-            const donationData = {
+            const donationData: Record<'meds' | 'books' | 'clothes' | 'food', number> & { ngo: string; status: string; uid: string } = {
                 meds: 0,
                 books: 0,
                 clothes: 0,
@@ -138,9 +153,9 @@ const SchedulePickupScreen = () => {
                     "Food": "food"
                 };
                 
-                const dbField = itemTypeMap[item.type];
+                const dbField = itemTypeMap[item.type as keyof typeof itemTypeMap];
                 if (dbField) {
-                    donationData[dbField] += item.quantity;
+                    (donationData[dbField as 'meds' | 'books' | 'clothes' | 'food'] as number) += item.quantity;
                 }
             });
             
@@ -158,14 +173,14 @@ const SchedulePickupScreen = () => {
             }
             
             console.log("Donation scheduled successfully:", data);
-            navigation.navigate('PickupScheduled');
+            router.push("/(donor)/pickupScheduled");
         } catch (err) {
             console.error("Error in handleSchedulePickup:", err);
             alert("An unexpected error occurred. Please try again.");
         }
     };
 
-    const handleNgoSelect = (ngo) => {
+    const handleNgoSelect = (ngo: Ngo) => {
         setSelectedNgo(ngo);
         setShowNgoDropdown(false);
     };
@@ -177,7 +192,7 @@ const SchedulePickupScreen = () => {
                 id: Date.now(),
                 type: selectedItemType,
                 quantity: itemQuantity,
-                icon: itemTypeInfo.icon
+                icon: itemTypeInfo ? itemTypeInfo.icon : null
             };
             
             setDonationItems([...donationItems, newItem]);
@@ -186,7 +201,7 @@ const SchedulePickupScreen = () => {
         }
     };
     
-    const handleRemoveItem = (itemId) => {
+    const handleRemoveItem = (itemId: number) => {
         setDonationItems(donationItems.filter(item => item.id !== itemId));
     };
     
